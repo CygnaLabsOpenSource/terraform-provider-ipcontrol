@@ -13,11 +13,14 @@ var (
 	domain         = "com."
 	owner          = "caa"
 	AType          = "A"
+	AAAAType       = "AAAA"
 	TXTType        = "TXT"
 	ttl            = "12345"
 	comment        = "test acc tf"
 	dataIPv4       = "10.0.0.1"
 	dataIPv4Update = "10.0.0.2"
+	dataIPv6       = "2001:db8:85a3::3000:82"
+	dataIPv6Update = "2001:db8:85a3::3000:83"
 	dataText       = "txt text record"
 	dataTextUpdate = "txt text record update"
 )
@@ -27,7 +30,7 @@ func TestAccADnsRR(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAddressDestroy,
+		CheckDestroy: testAccCheckDnsRRDestroy,
 		Steps: []resource.TestStep{
 			//  Step 1 create
 			{
@@ -104,12 +107,94 @@ func TestAccADnsRR(t *testing.T) {
 	})
 }
 
+func TestAccAAAADnsRR(t *testing.T) {
+	resourceName := "ipcontrol_dns_rr.my_rr_aaaa"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckDnsRRDestroy,
+		Steps: []resource.TestStep{
+			//  Step 1 create
+			{
+
+				Config: testAccConfigWithProviderIPC(
+					fmt.Sprintf(`
+					resource "ipcontrol_dns_rr" "my_rr_aaaa" {
+					  owner                = "%s"
+					  domain               = "%s"
+					  resource_record_type = "%s"
+					  data                 = "%s"
+					}
+					`, owner, domain, AAAAType, dataIPv6),
+				),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckDnsRRExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "owner", owner),
+					resource.TestCheckResourceAttr(resourceName, "data", dataIPv6),
+					resource.TestCheckResourceAttr(resourceName, "resource_record_type", AAAAType),
+					resource.TestCheckResourceAttr(resourceName, "domain", domain),
+				),
+			},
+
+			// Step 2 update data
+
+			{
+
+				Config: testAccConfigWithProviderIPC(
+					fmt.Sprintf(`
+					resource "ipcontrol_dns_rr" "my_rr_aaaa" {
+					  owner                = "%s"
+					  domain               = "%s"
+					  resource_record_type = "%s"
+					  data                 = "%s"
+					}
+					`, owner, domain, AAAAType, dataIPv6Update),
+				),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckDnsRRExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "owner", owner),
+					resource.TestCheckResourceAttr(resourceName, "data", dataIPv6Update),
+					resource.TestCheckResourceAttr(resourceName, "resource_record_type", AAAAType),
+					resource.TestCheckResourceAttr(resourceName, "domain", domain),
+				),
+			},
+
+			// Step 3 add ttl, comment
+
+			{
+
+				Config: testAccConfigWithProviderIPC(
+					fmt.Sprintf(`
+					resource "ipcontrol_dns_rr" "my_rr_aaaa" {
+					  owner                = "%s"
+					  domain               = "%s"
+					  resource_record_type = "%s"
+					  data                 = "%s"
+					  ttl                  = "%s"
+					  comment              = "%s"
+					}
+					`, owner, domain, AAAAType, dataIPv6Update, ttl, comment),
+				),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckDnsRRExists(resourceName),
+					resource.TestCheckResourceAttr(resourceName, "owner", owner),
+					resource.TestCheckResourceAttr(resourceName, "data", dataIPv6Update),
+					resource.TestCheckResourceAttr(resourceName, "resource_record_type", AAAAType),
+					resource.TestCheckResourceAttr(resourceName, "domain", domain),
+					resource.TestCheckResourceAttr(resourceName, "ttl", ttl),
+					resource.TestCheckResourceAttr(resourceName, "comment", comment),
+				),
+			},
+		},
+	})
+}
+
 func TestAccTXTDnsRR(t *testing.T) {
 	resourceName := "ipcontrol_dns_rr.my_txt_rr"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckAddressDestroy,
+		CheckDestroy: testAccCheckDnsRRDestroy,
 		Steps: []resource.TestStep{
 			//  Step 1 create
 			{

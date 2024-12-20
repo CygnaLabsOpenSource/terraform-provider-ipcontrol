@@ -24,7 +24,7 @@ func TestAccDataSourceTXTDnsRR(t *testing.T) {
 					  comment			   = "%s"
 					}
 					
-					data "ipcontrol_dns_rr" "my_a_rr" {
+					data "ipcontrol_dns_rr" "my_txt_rr" {
 					  owner                = "%s"
 					  domain               = "%s"
 					  resource_record_type = "%s"
@@ -34,12 +34,51 @@ func TestAccDataSourceTXTDnsRR(t *testing.T) {
 					`, owner, domain, AType, dataIPv4, ttl, comment, owner, domain, AType, dataIPv4),
 				),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "owner", owner),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "domain", domain),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "resource_record_type", AType),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "data", dataIPv4),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "ttl", ttl),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_a_rr", "comment", comment),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "owner", owner),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "domain", domain),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "resource_record_type", AType),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "data", dataIPv4),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "ttl", ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_txt_rr", "comment", comment),
+				),
+			},
+		},
+	})
+}
+
+func TestAccDataSourceAAAADnsRR(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccConfigWithProviderIPC(
+					fmt.Sprintf(`
+					resource "ipcontrol_dns_rr" "my_rr" {
+					  owner                = "%s"
+					  domain               = "%s"
+					  resource_record_type = "%s"
+					  data                 = "%s"
+					  ttl    			   = "%s"
+					  comment			   = "%s"
+					}
+					
+					data "ipcontrol_dns_rr" "my_aaaa_rr" {
+					  owner                = "%s"
+					  domain               = "%s"
+					  resource_record_type = "%s"
+					  data                 = "%s"
+					  depends_on = [ipcontrol_dns_rr.my_rr]
+					}
+					`, owner, domain, AAAAType, dataIPv6, ttl, comment, owner, domain, AAAAType, dataIPv6),
+				),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "owner", owner),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "domain", domain),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "resource_record_type", AAAAType),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "data", dataIPv6),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "ttl", ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_rr.my_aaaa_rr", "comment", comment),
 				),
 			},
 		},
