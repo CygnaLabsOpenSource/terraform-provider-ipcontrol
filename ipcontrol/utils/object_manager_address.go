@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
@@ -9,23 +8,25 @@ import (
 )
 
 /* CreateSubnet */
-func (objMgr *ObjectManager) CreateAddress(addr *en.IPCAddressPost) (*en.IPCAddress, error) {
-	var address []en.IPCAddress
+func (objMgr *ObjectManager) CreateAddress(addr *en.IPCAddressPost) error {
+	// var address []en.IPCAddress
 
 	resp, err := objMgr.connector.CreateObject(addr, "ipcadddevice")
 	log.Println("[DEBUG] Address Resp: " + fmt.Sprintf("%v", resp))
 
 	if err != nil {
-		return nil, err
+		return err
 	}
+	return nil
 
-	err = json.Unmarshal([]byte(resp), &address)
+	// err = json.Unmarshal([]byte(resp), &address)
 
-	if err != nil {
-		log.Printf("Create Device Address Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-	}
+	// if err != nil {
+	// 	log.Printf("Create Device Address Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
+	// 	return nil, err
+	// }
 
-	return &address[0], err
+	// return &address[0], err
 }
 
 /* get address */
@@ -48,18 +49,21 @@ func (objMgr *ObjectManager) DeleteAddressRef(address string) (string, error) {
 }
 
 /* UpdateAddress */
-func (objMgr *ObjectManager) UpdateAddress(data *en.IPCAddressPost) (*en.IPCAddress, error) {
-	var address []en.IPCAddress
-	resp, err := objMgr.connector.UpdateObject(data, "ipcmodifydevice")
+func (objMgr *ObjectManager) UpdateAddress(data *en.IPCAddressPost) error {
+	// var address []en.IPCAddress
+	_, err := objMgr.connector.UpdateObject(data, "ipcmodifydevice")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	err = json.Unmarshal([]byte(resp), &address)
+	return nil
 
-	if err != nil {
-		log.Printf("Update Device Address Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-	}
+	// err = json.Unmarshal([]byte(resp), &address)
 
-	return &address[0], err
+	// if err != nil {
+	// 	log.Printf("Update Device Address Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
+	// 	return nil, err
+	// }
+
+	// return &address[0], err
 }
