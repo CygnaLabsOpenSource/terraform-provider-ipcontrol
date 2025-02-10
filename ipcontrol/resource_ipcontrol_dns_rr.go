@@ -161,18 +161,18 @@ func getRRContext(ctx context.Context, d *schema.ResourceData, m interface{}) di
 }
 
 func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	d.Partial(true)
 	var diags diag.Diagnostics
 	connector := m.(*cc.Connector)
 	objMgr := cc.NewObjectManager(connector)
 
 	idStr := d.Id()
 	id, err := strconv.Atoi(idStr)
-
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
 			Summary:  "Can't format ID",
-			Detail:   fmt.Sprintf("Error when format id : (%v)", err),
+			Detail:   fmt.Sprintf("Error formatting ID: %v", err),
 		})
 		return diags
 	}
@@ -182,7 +182,7 @@ func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 	resourceRecType := d.Get("resource_record_type").(string)
 	resourceRecClass := d.Get("resource_record_class").(string)
 	domain := d.Get("domain").(string)
-	data := d.Get("data").(string)
+	dataStr := d.Get("data").(string)
 	comment := d.Get("comment").(string)
 	ttl := d.Get("ttl").(string)
 	deviceRecFlag := d.Get("device_rec_flag").(bool)
@@ -193,7 +193,7 @@ func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 		Owner:            owner,
 		DomainType:       domainType,
 		ResourceRecType:  resourceRecType,
-		Data:             data,
+		Data:             dataStr,
 		Comment:          comment,
 		TTL:              ttl,
 		ResourceRecClass: resourceRecClass,
@@ -204,13 +204,15 @@ func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
-			Summary:  "Error when updating dns resource record",
-			Detail:   fmt.Sprintf("Error when updating dns resource record: (%v)", err),
+			Summary:  "Error when updating DNS resource record",
+			Detail:   fmt.Sprintf("Error when updating DNS resource record: %v", err),
 		})
 		return diags
 	}
 
-	return getRRContext(ctx, d, m)
+	diags = getRRContext(ctx, d, m)
+	d.Partial(false)
+	return diags
 }
 
 func deleteRRContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
