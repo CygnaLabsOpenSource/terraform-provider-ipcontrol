@@ -28,6 +28,7 @@ The `ipcontrol_address` data source retrieves information about a device managed
 | `device_type` | `string` | The type of the device. |
 | `domain_type` | `string` | The type of the domain. |
 | `duid` | `string` | The DHCP Unique Identifier for IPv6. |
+| `interfaces` | `list` | Network interfaces for the device. |
 
 ### Interface Configuration
 
@@ -46,39 +47,13 @@ Each interface in the `interfaces` list supports:
 
 #### Device with IPv4
 ```hcl
-resource "ipcontrol_address" "pc_v4" {
-  options = [
-    "ignoreDupWarning",
-    "resourceRecordFlag"
-  ]
-  
-  device_type = "PC"
-  domain_name = "com."
-  hostname    = "tfhost"
-
-  interfaces {
-    name         = "tfname"
-    address_type = ["Static"]
-    ip_address   = ["135.0.0.146"]
-  }
+data "ipcontrol_address" "my_device" {
+  ip_address = "192.168.29.111"
 }
 ```
 #### Device with IPv6
 ```hcl
-resource "ipcontrol_address" "example" {
-  options = [
-    "ignoreDupWarning",
-    "resourceRecordFlag"
-  ]
-  
-  device_type = "PC"
-  domain_name = "com."
-  hostname    = "tfhostv6"
-
-  interfaces {
-    name         = "tfname"
-    address_type = ["Static"]
-    ip_address   = ["2001:db8:85a3::3000:0"]
-  }
+data "ipcontrol_address" "my_device" {
+  ip_address = "2001:db8:85a3::3000:0"
 }
 ```
