@@ -129,6 +129,10 @@ func setIPCAddressPoolResource(d *schema.ResourceData, addressPool en.IPCAddress
 		d.Set("end_address", addressPool.EndAddr)
 	}
 
+	if addressPool.PrimaryNetService != "" {
+		d.Set("primary_net_service", addressPool.PrimaryNetService)
+	}
+
 	if addressPool.DhcpPolicySet != "" {
 		d.Set("dhcp_policy_set", addressPool.DhcpPolicySet)
 	}
