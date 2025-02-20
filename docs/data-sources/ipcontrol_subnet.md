@@ -1,4 +1,4 @@
-# Terraform Data Source: ipcontrol_subnet
+# Terraform Data Source: IPC Subnet
 
 ## Overview
 
