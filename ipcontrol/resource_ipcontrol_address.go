@@ -272,7 +272,7 @@ func createAddressRecordContext(ctx context.Context, d *schema.ResourceData, m i
 		address.Interfaces = append(address.Interfaces, addressInterface)
 
 	}
-	resp, err := objMgr.CreateAddress(&address)
+	err := objMgr.CreateAddress(&address)
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -282,16 +282,52 @@ func createAddressRecordContext(ctx context.Context, d *schema.ResourceData, m i
 		})
 		return diags
 	}
-
-	setIPCAddressResource(d, *resp)
-	return diags
+	// setIPCAddressResource(d, *resp)
+	// return diags
+	return getAddressRecordContext(ctx, d, m)
 }
 
 func getAddressRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
 	var diags diag.Diagnostics
 	connector := m.(*cc.Connector)
 	objMgr := cc.NewObjectManager(connector)
-	ipAddress := d.Get("ip_address").(string)
+	var ipAddress string
+	interfaces := d.Get("interfaces").([]interface{})
+
+	// get ip address from interfaces
+	for _, intf := range interfaces {
+		iface := intf.(map[string]interface{})
+		ipAddresses, ok := iface["ip_address"].([]interface{})
+
+		if !ok {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Can't read ip_address in the address interfaces",
+				Detail:   fmt.Sprintf("Can't read ip_address in the address interfaces: (%s) ", ipAddresses),
+			})
+			continue
+		}
+
+		ipAddressSlice, err := cc.ToStringSlice(ipAddresses)
+
+		if err != nil {
+			diags = append(diags, diag.Diagnostic{
+				Severity: diag.Error,
+				Summary:  "Error when format ip_address",
+				Detail:   fmt.Sprintf("Error when format ip_address: (%s)", err),
+			})
+			return diags
+		}
+		ipAddress = ipAddressSlice[0]
+		//  break if ip address is not empty
+		break
+	}
+
+	if ipAddress == "" {
+		return diags
+	}
+
+	// ipAddress := d.Get("ip_address").(string)
 
 	query := map[string]string{
 		"ipAddress": ipAddress,
@@ -420,7 +456,7 @@ func updateAddressRecordContext(ctx context.Context, d *schema.ResourceData, m i
 		address.Interfaces = append(address.Interfaces, addressInterface)
 	}
 
-	resp, err := objMgr.UpdateAddress(address)
+	err = objMgr.UpdateAddress(address)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -429,9 +465,11 @@ func updateAddressRecordContext(ctx context.Context, d *schema.ResourceData, m i
 		})
 		return diags
 	}
-	setIPCAddressResource(d, *resp)
+	// setIPCAddressResource(d, *resp)
 
-	return diags
+	// return diags
+	return getAddressRecordContext(ctx, d, m)
+
 }
 
 func deleteAddressRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

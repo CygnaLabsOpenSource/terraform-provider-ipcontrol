@@ -83,7 +83,7 @@ type CaaHttpRequestor struct {
 }
 
 type CAAConnector interface {
-	CreateObject(obj cc.IpamObject, ref string) (id string, err error)
+	CreateObject(obj cc.IpamObject, ref string) (resp string, err error)
 	GetObject(obj cc.IpamObject, ref string, res interface{}, query *cc.QueryParams) error
 	DeleteObject(obj cc.IpamObject, ref string, query *cc.QueryParams) (refRes string, err error)
 	UpdateObject(obj cc.IpamObject, ref string) (refRes string, err error)

@@ -59,12 +59,14 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"ipcontrol_subnet":       resourceSubnet(),
 			"ipcontrol_address":      resourceAddress(),
+			"ipcontrol_dns_rr":       resourceDnsRR(),
 			"ipcontrol_address_pool": resourceAddressPool(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"ipcontrol_subnet":       dataSourceSubnets(),
 			"ipcontrol_address":      dataSourceAddresses(),
 			"ipcontrol_address_pool": dataSourceAddressPool(),
+			"ipcontrol_dns_rr":       dataSourceDnsRRs(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}
