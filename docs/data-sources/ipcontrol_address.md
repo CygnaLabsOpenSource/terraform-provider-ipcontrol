@@ -10,24 +10,25 @@ The `ipcontrol_address` data source retrieves information about a device managed
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `ip_address` | `string` | The IP Address of the Device. |
+| `ip_address` | `string` | The IP address of the device. |
 
 
 ### Computed Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | `string` | Unique identifier for the Device. |
+| `id` | `string` | Unique identifier for the device. |
 | `container` | `string` | The name of the container that contains the device. |
-| `ip_address` | `string` | The IP Address of the Device. |
+| `ip_address` | `string` | The IP address of the device. |
 | `address_type` | `string` | The address type of this interface IP address. |
 | `resource_record_flag` | `string` | Resource record status. |
 | `aliases` | `list(string)` | Device aliases. |
-| `domain_name` | `string` | The Domain name of the Device. |
-| `hostname` | `string` | The host name of the Device. |
+| `domain_name` | `string` | The domain name of the device. |
+| `hostname` | `string` | The host name of the device. |
 | `device_type` | `string` | The type of the device. |
 | `domain_type` | `string` | The type of the domain. |
-| `duid` | `string` | The DHCP Unique Identifier for IPv6. |
+| `duid` | `string` | The DHCP unique identifier for IPv6. |
+| `interfaces` | `list` | Network interfaces for the device. |
 
 ### Interface Configuration
 
@@ -46,39 +47,13 @@ Each interface in the `interfaces` list supports:
 
 #### Device with IPv4
 ```hcl
-resource "ipcontrol_address" "pc_v4" {
-  options = [
-    "ignoreDupWarning",
-    "resourceRecordFlag"
-  ]
-  
-  device_type = "PC"
-  domain_name = "com."
-  hostname    = "tfhost"
-
-  interfaces {
-    name         = "tfname"
-    address_type = ["Static"]
-    ip_address   = ["135.0.0.146"]
-  }
+data "ipcontrol_address" "my_device" {
+  ip_address = "192.168.29.111"
 }
 ```
 #### Device with IPv6
 ```hcl
-resource "ipcontrol_address" "example" {
-  options = [
-    "ignoreDupWarning",
-    "resourceRecordFlag"
-  ]
-  
-  device_type = "PC"
-  domain_name = "com."
-  hostname    = "tfhostv6"
-
-  interfaces {
-    name         = "tfname"
-    address_type = ["Static"]
-    ip_address   = ["2001:db8:85a3::3000:0"]
-  }
+data "ipcontrol_address" "my_device" {
+  ip_address = "2001:db8:85a3::3000:0"
 }
 ```

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The resource manages device configurations with comprehensive network and interface settings.
+The `ipcontrol_address` resource manages device configurations with comprehensive network and interface settings.
 
 ## Parameters
 
@@ -10,26 +10,26 @@ The resource manages device configurations with comprehensive network and interf
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `hostname` | `string` | The host name of the Device. Requires creating a new resource if changed. |
+| `hostname` | `string` | The host name of the device.|
 | `interfaces` | `list` | Network interfaces for the device. Each interface requires specific details. |
 
 ### Optional Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `domain_name` | `string` | The Domain name of the Device. |
+| `domain_name` | `string` | The domain name of the device. |
 | `device_type` | `string` | The type of the device. |
 | `domain_type` | `string` | The type of the domain. |
-| `duid` | `string` | The DHCP Unique Identifier for IPv6. |
+| `duid` | `string` | The DHCP unique identifier for IPv6. |
 | `options` | `list(string)` | Additional configuration options. |
 
 ### Computed Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `id` | `string` | Unique identifier for the Device. |
+| `id` | `string` | Unique identifier for the device. |
 | `container` | `string` | The name of the container that contains the device. |
-| `ip_address` | `string` | The IP Address of the Device. |
+| `ip_address` | `string` | The IP address of the device. |
 | `address_type` | `string` | The address type of this interface IP address. |
 | `resource_record_flag` | `string` | Resource record status. |
 | `aliases` | `list(string)` | Device aliases. |
@@ -68,7 +68,7 @@ Each item in the `options` list supports:
 
 | Value | Description |
 |-----------|-------------|
-| `ignoreDupWarning` | TWhen this option is specified, if the administrator policy of the user indicates "warn" for the "Allow Duplicate Hostname Checking" option, the warning will be ignored and the device added with the duplicate hostname. |
+| `ignoreDupWarning` | When this option is specified, if the administrator policy of the user indicates "warn" for the "Allow Duplicate Hostname Checking" option, the warning will be ignored and the device added with the duplicate hostname. |
 | `resourceRecordFlag` | When this option is specified, resource records are added for this device. |
 | `splitPool` | When this option is specified, if the IPv4 address specified in column A falls within an existing address pool, the device is created and the pool is split around the given IP address. This function is not supported for IPv6. |
 | `contiguous` | When this option is specified, the number of addresses specified in rangeSize will be allocated as a contiguous IP address range. Otherwise, the rangeSize number of devices will be added, but may not be in a contiguous range |

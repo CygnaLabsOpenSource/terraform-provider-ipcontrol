@@ -1,4 +1,4 @@
-# Terraform Resource: ipcontrol_subnet
+# Terraform Resource: IPC Subnet
 
 ## Overview
 
