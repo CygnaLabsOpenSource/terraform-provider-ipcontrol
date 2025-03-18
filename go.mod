@@ -1,6 +1,6 @@
 module terraform-provider-ipcontrol
 
-go 1.23.2
+go 1.23.3
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.6.1
