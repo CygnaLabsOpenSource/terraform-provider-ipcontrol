@@ -12,13 +12,18 @@ The `ipcontrol_address` data source retrieves information about a device managed
 |-----------|------|-------------|
 | `ip_address` | `string` | The IP address of the device. |
 
+### Optional Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `container` | `string` | The name of the container that contains the device. **Required** only if the IP address is not unique. |
+| `rawcontainer` | `boolean` | Pass the container parameter through to the API without prefixing.    |
 
 ### Computed Parameters
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `id` | `string` | Unique identifier for the device. |
-| `container` | `string` | The name of the container that contains the device. |
 | `ip_address` | `string` | The IP address of the device. |
 | `address_type` | `string` | The address type of this interface IP address. |
 | `resource_record_flag` | `string` | Resource record status. |

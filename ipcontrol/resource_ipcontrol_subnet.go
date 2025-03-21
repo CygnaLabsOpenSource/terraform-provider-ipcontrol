@@ -182,6 +182,7 @@ func getSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	d.Partial(true)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	var err error
@@ -190,12 +191,48 @@ func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m in
 
 	name := d.Get("name").(string)
 	size := d.Get("size").(int)
-
+	dnsDomain := strings.TrimSpace(d.Get("dns_domain").(string))
+	status := strings.TrimSpace(d.Get("block_status").(string))
 	address := d.Get("address").(string)
 	cloudType := d.Get("cloud_type").(string)
 	cloudObjectId := d.Get("cloud_object_id").(string)
 
-	_, err = objMgr.UpdateSubnet(address, name, size, cloudType, cloudObjectId)
+	payload := en.IPCSubnetUpdate{
+		IPCSubnetPost: en.IPCSubnetPost{
+			Address:       address,
+			Name:          name,
+			Size:          size,
+			CloudType:     cloudType,
+			CloudObjectId: cloudObjectId,
+		},
+	}
+
+	if d.HasChange("block_status") {
+		oldValue, newValue := d.GetChange("block_status")
+
+		// if the block status is changed, we need to update the block status
+		payload.IPCSubnetPost.BlockStatus = newValue.(string)
+
+		// status is payload to get the current block
+		payload.Status = oldValue.(string)
+	} else {
+
+		// status is payload to get the current block
+		payload.Status = status
+	}
+
+	if dnsDomain != "" {
+		payload.Subnet = &en.Subnet{
+			DNSDomain: []string{dnsDomain},
+		}
+	} else if dnsDomain == "" && payload.IPCSubnetPost.BlockStatus != "Reserved" && payload.IPCSubnetPost.BlockStatus != "Aggregate" {
+		// logic to remove dns domain
+		payload.Subnet = &en.Subnet{
+			DNSDomain: []string{},
+		}
+	}
+
+	err = objMgr.UpdateSubnet(&payload)
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -206,8 +243,10 @@ func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m in
 		return diags
 	}
 
-	return getSubnetRecordContext(ctx, d, m)
-
+	d.Set("block_status", status)
+	diags = getSubnetRecordContext(ctx, d, m)
+	d.Partial(false)
+	return diags
 }
 
 func deleteSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

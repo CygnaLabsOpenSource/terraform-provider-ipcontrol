@@ -16,16 +16,23 @@ The `ipcontrol_subnet` resource is used to assign IP address blocks for devices 
 
 ### Optional Parameters
 
-| Parameter | Type | Description | Default |
-|-----------|------|-------------|---------|
-| `address_version` | `int` | IP Address version (4 for IPv4, 6 for IPv6) | 4 |
-| `rawcontainer` | `boolean` | Pass container parameter through to API without prefixing | `false` |
-| `type` | `string` | Block Type (defaults to "Any" if not specified) | "Any" |
-| `dns_domain` | `string` | DNS domain name for the block | - |
-| `name` | `string` | Name of the block | - |
-| `block_status` | `string` | Current status of the block | - |
-| `cloud_type` | `string` | Cloud Provider type | - |
-| `cloud_object_id` | `string` | Object ID in the cloud environment | - |
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `address_version` | `int` | IP Address version (4 for IPv4, 6 for IPv6). Default value is 4 |
+| `rawcontainer` | `boolean` | Pass container parameter through to API without prefixing |
+| `type` | `string` | Block Type (defaults to "Any" if not specified) |
+| `dns_domain` | `string` | DNS domain name for the block |
+| `name` | `string` | Name of the block. Defaults to system supplied name of Address space/Block size |
+| `block_status` | `string` | Current status of the block. Default value is "Deployed" |
+| `cloud_type` | `string` | Cloud Provider type. If not specified, a block type of Any is assumed. |
+| `cloud_object_id` | `string` | Object ID in the cloud environment |
+
+### Computed Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| `id` | `int` | The ID of the subnet  |
+
 
 ## Address Version Details
 

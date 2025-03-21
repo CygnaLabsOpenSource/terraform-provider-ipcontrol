@@ -22,7 +22,8 @@ func dataSourceSubnets() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"container": {
 				Type:        schema.TypeString,
-				Required:    true,
+				Optional:    true,
+				Computed:    true,
 				Description: "The name of the container that will hold the block.",
 			},
 			"rawcontainer": {
@@ -49,12 +50,12 @@ func dataSourceSubnets() *schema.Resource {
 			},
 			"size": {
 				Type:        schema.TypeInt,
-				Required:    true,
+				Optional:    true,
+				Computed:    true,
 				Description: "The size parameter represents the subnet mask or prefix length of the address block in CIDR notation. For IPv4, this is typically a value between 0 and 32 (e.g., 24 for 255.255.255.0). For IPv6, the size value is larger due to the increased address space. IPv6 prefix lengths commonly range between /48 to /128, with /64 often used as the standard size for a single subnet.",
 			},
 			"name": {
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 				Description: "The name of the block.",
 			},
@@ -66,13 +67,11 @@ func dataSourceSubnets() *schema.Resource {
 			},
 			"cloud_type": {
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 				Description: "Specify the type of Cloud Provider. Currently one of: AWS, Azure, Cisco ACI, Cisco DNA Center, CloudBolt, OpenStack, ServiceNow, VMware.",
 			},
 			"cloud_object_id": {
 				Type:        schema.TypeString,
-				Optional:    true,
 				Computed:    true,
 				Description: "The ID of this object as it is known in the cloud environment.",
 			},
@@ -95,11 +94,20 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 	status := strings.TrimSpace(d.Get("block_status").(string))
 
 	query := map[string]string{
-		"address":      address,
-		"container":    container,
-		"rawcontainer": strconv.FormatBool(rawContainer),
-		"size":         strconv.FormatInt(int64(size), 10),
-		"status":       status,
+		"address": address,
+		"status":  status,
+	}
+
+	if size != 0 {
+		query["size"] = strconv.FormatInt(int64(size), 10)
+	}
+
+	if container != "" {
+		query["container"] = container
+
+		if rawContainer {
+			query["rawcontainer"] = strconv.FormatBool(rawContainer)
+		}
 	}
 
 	response, err := objMgr.GetSubnet(query)
@@ -130,8 +138,9 @@ func dataSourceSubnetsRead(ctx context.Context, d *schema.ResourceData, m interf
 }
 
 func flattenIPCSubnet(d *schema.ResourceData, subnet *en.IPCSubnet) {
-
-	d.SetId(subnet.BlockAddr)
+	id := strconv.Itoa(subnet.ID)
+	d.SetId(id)
+	// d.SetId(subnet.BlockAddr)
 	// d.Set("container", subnet.Container[0])
 	d.Set("address", subnet.BlockAddr)
 	d.Set("type", subnet.BlockType)

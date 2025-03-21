@@ -42,7 +42,7 @@ func NewAddress(sb IPCAddress) *IPCAddress {
 
 type IPCAddressPost struct {
 	ObjBase    `json:"-"`
-	Options    []string           `json:"options"`
+	Options    []string           `json:"options,omitempty"`
 	ID         int                `json:"id,omitempty"`
 	DeviceType string             `json:"deviceType"`
 	DomainName string             `json:"domainName"`

@@ -6,6 +6,7 @@ import (
 
 type IPCSubnet struct {
 	ObjBase
+	ID            int      `json:"id"`
 	Container     []string `json:"container"`
 	BlockAddr     string   `json:"blockAddr"`
 	BlockType     string   `json:"blockType"`
@@ -38,6 +39,16 @@ type IPCSubnetPost struct {
 	BlockStatus    string `json:"blockStatus,omitempty"`
 	CloudType      string `json:"cloudType,omitempty"`
 	CloudObjectId  string `json:"cloudObjectId,omitempty"`
+}
+
+type Subnet struct {
+	DNSDomain []string `json:"forwardDomains"`
+}
+
+type IPCSubnetUpdate struct {
+	IPCSubnetPost
+	Status string  `json:"status,omitempty"`
+	Subnet *Subnet `json:"subnet,omitempty"`
 }
 
 /*
