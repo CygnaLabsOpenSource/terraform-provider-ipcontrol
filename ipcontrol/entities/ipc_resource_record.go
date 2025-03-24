@@ -26,11 +26,11 @@ func NewResourceRecord(sb IPCDnsRR) *IPCDnsRR {
 
 type IPCDnsRRPost struct {
 	ObjBase
-	Data              string `json:"data"`
-	ResourceRecType   string `json:"resourceRecType"`
-	Domain            string `json:"domain"`
-	Owner             string `json:"owner"`
-	DeviceRecFlag     bool   `json:"deviceRecFlag,omitempty"`
+	Data            string `json:"data"`
+	ResourceRecType string `json:"resourceRecType"`
+	Domain          string `json:"domain"`
+	Owner           string `json:"owner"`
+	// DeviceRecFlag     bool   `json:"deviceRecFlag,omitempty"`
 	DomainType        string `json:"domainType,omitempty"`
 	TTL               string `json:"TTL,omitempty"`
 	ID                int    `json:"id,omitempty"`

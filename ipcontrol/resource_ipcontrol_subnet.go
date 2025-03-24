@@ -74,19 +74,17 @@ func resourceSubnet() *schema.Resource {
 			"block_status": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
+				Default:     "Deployed",
 				Description: "The current status of the block. Accepted values are: Deployed, FullyAssigned, Reserved, Aggregate",
 			},
 			"cloud_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
-				Description: "Specify the type of Cloud Provider. Currently one of: AWS, Azure, Cisco ACI, Cisco DNA Center, CloudBolt, OpenStack, ServiceNow, VMware.",
+				Description: "Specify the type of Cloud Provider. Currently one of: AWS, Azure, Cisco ACI, Cisco DNA Center, CloudBolt, OpenStack, ServiceNow, VMware, GCP.",
 			},
 			"cloud_object_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
 				Description: "The ID of this object as it is known in the cloud environment.",
 			},
 		},
@@ -209,26 +207,25 @@ func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m in
 
 	if d.HasChange("block_status") {
 		oldValue, newValue := d.GetChange("block_status")
-
 		// if the block status is changed, we need to update the block status
 		payload.IPCSubnetPost.BlockStatus = newValue.(string)
-
 		// status is payload to get the current block
 		payload.Status = oldValue.(string)
 	} else {
-
-		// status is payload to get the current block
+		payload.IPCSubnetPost.BlockStatus = status
 		payload.Status = status
 	}
 
-	if dnsDomain != "" {
-		payload.Subnet = &en.Subnet{
-			DNSDomain: []string{dnsDomain},
-		}
-	} else if dnsDomain == "" && payload.IPCSubnetPost.BlockStatus != "Reserved" && payload.IPCSubnetPost.BlockStatus != "Aggregate" {
-		// logic to remove dns domain
+	// skip subnet if block status is Reserved or Aggregate
+	// currently subnet have only dnsDomain
+	if payload.IPCSubnetPost.BlockStatus != "Reserved" && payload.IPCSubnetPost.BlockStatus != "Aggregate" {
+
 		payload.Subnet = &en.Subnet{
 			DNSDomain: []string{},
+		}
+
+		if dnsDomain != "" {
+			payload.Subnet.DNSDomain = append(payload.Subnet.DNSDomain, dnsDomain)
 		}
 	}
 

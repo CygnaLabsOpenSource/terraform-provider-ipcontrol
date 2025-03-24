@@ -37,8 +37,8 @@ type IPCSubnetPost struct {
 	DNSDomain      string `json:"dnsdomain,omitempty"`
 	Name           string `json:"name,omitempty"`
 	BlockStatus    string `json:"blockStatus,omitempty"`
-	CloudType      string `json:"cloudType,omitempty"`
-	CloudObjectId  string `json:"cloudObjectId,omitempty"`
+	CloudType      string `json:"cloudType"`
+	CloudObjectId  string `json:"cloudObjectId"`
 }
 
 type Subnet struct {
