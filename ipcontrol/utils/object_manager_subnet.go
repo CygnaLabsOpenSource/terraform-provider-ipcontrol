@@ -52,25 +52,12 @@ func (objMgr *ObjectManager) DeleteSubnetByIdRef(address string, size string) (s
 }
 
 /* UpdateSubnet */
-func (objMgr *ObjectManager) UpdateSubnet(
-	address string,
-	name string,
-	size int,
-	cloudType string,
-	cloudObjectId string,
-) (*en.IPCSubnetPost, error) {
-	subnet := en.NewSubnetPost(en.IPCSubnetPost{
-		Address:       address,
-		Name:          name,
-		Size:          size,
-		CloudType:     cloudType,
-		CloudObjectId: cloudObjectId,
-	})
+func (objMgr *ObjectManager) UpdateSubnet(payload *en.IPCSubnetUpdate) error {
 
-	_, err := objMgr.connector.UpdateObject(subnet, "ipcmodifysubnet")
+	_, err := objMgr.connector.UpdateObject(payload, "ipcmodifysubnet")
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return subnet, nil
+	return nil
 }

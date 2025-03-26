@@ -64,7 +64,6 @@ func resourceDnsRR() *schema.Resource {
 			},
 			"device_rec_flag": {
 				Type:        schema.TypeBool,
-				Optional:    true,
 				Computed:    true,
 				Description: "When true, this indicates that the resource record is bound to a device. When false, this indicates that the resource record is associated with the domain only, and not a specific device.",
 			},
@@ -99,7 +98,7 @@ func createRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 	data := d.Get("data").(string)
 	comment := d.Get("comment").(string)
 	ttl := d.Get("ttl").(string)
-	deviceRecFlag := d.Get("device_rec_flag").(bool)
+	// deviceRecFlag := d.Get("device_rec_flag").(bool)
 
 	payload := en.NewDnsRRPost(en.IPCDnsRRPost{
 		Domain:           domain,
@@ -110,7 +109,7 @@ func createRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 		Comment:          comment,
 		TTL:              ttl,
 		ResourceRecClass: resourceRecClass,
-		DeviceRecFlag:    deviceRecFlag,
+		// DeviceRecFlag:    deviceRecFlag,
 	})
 
 	err := objMgr.CreateDnsRR(payload)
@@ -185,7 +184,7 @@ func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 	dataStr := d.Get("data").(string)
 	comment := d.Get("comment").(string)
 	ttl := d.Get("ttl").(string)
-	deviceRecFlag := d.Get("device_rec_flag").(bool)
+	// deviceRecFlag := d.Get("device_rec_flag").(bool)
 
 	payload := en.NewDnsRRPost(en.IPCDnsRRPost{
 		ID:               id,
@@ -197,7 +196,7 @@ func updateRRContext(ctx context.Context, d *schema.ResourceData, m interface{})
 		Comment:          comment,
 		TTL:              ttl,
 		ResourceRecClass: resourceRecClass,
-		DeviceRecFlag:    deviceRecFlag,
+		// DeviceRecFlag:    deviceRecFlag,
 	})
 
 	err = objMgr.UpdateDnsRR(payload)

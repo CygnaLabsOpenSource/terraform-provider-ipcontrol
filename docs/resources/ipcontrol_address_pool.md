@@ -25,11 +25,11 @@ The `ipcontrol_address_pool` resource manages address pool in IPControl.
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `container` | `string` | The name of the container that holds the block in which the pool is defined. This is required only if there is overlapping address space in use and the start address is in overlapping space. |
+| `container` | `string` | The name of the container that holds the block in which the pool is defined. This is required only if there is overlapping address space in use and the start address is in overlapping space. The default value will be the container that contains that pool. |
 | `dhcp_policy_set` | `string` | The name of a Policy Set used with this pool. |
 | `dhcp_option_set` | `string` | The name of a Option Set used with this pool. |
-| `overlap_interface_ip` | `boolean` | Flag to allow a DHCPv6 pool to overlap an interface address. |
-| `name` | `string` | The name of the address pool. |
+| `overlap_interface_ip` | `boolean` | Flag to allow a DHCPv6 pool to overlap an interface address. Default value is "false" |
+| `name` | `string` | The name of the address pool. For IPv4 address pool, defaults to "Start Address-End Address". For IPv6 address pool, defaults to "Start Address/Prefix Length".|
 
 ### Computed Parameters
 
@@ -37,6 +37,7 @@ The `ipcontrol_address_pool` resource manages address pool in IPControl.
 |-----------|------|-------------|
 | `last_admin` | `string` | The login id of the last administrator to update the pool. |
 | `create_date` | `string` | The date the pool was created. |
+| `id` | `int` | The id of the address pool. |
 
 
 

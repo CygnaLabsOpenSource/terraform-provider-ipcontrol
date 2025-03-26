@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strconv"
 	cc "terraform-provider-ipcontrol/ipcontrol/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -22,7 +23,13 @@ func dataSourceAddresses() *schema.Resource {
 			"container": {
 				Type:        schema.TypeString,
 				Computed:    true,
+				Optional:    true,
 				Description: "The name of the container that contains the device.",
+			},
+			"rawcontainer": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				Description: "Set to true to pass the container parameter through to the API without prefixing.",
 			},
 			"ip_address": {
 				Type:        schema.TypeString,
@@ -115,6 +122,8 @@ func dataSourceAddressesRead(ctx context.Context, d *schema.ResourceData, m inte
 	connector := m.(*cc.Connector)
 	objMgr := cc.NewObjectManager(connector)
 	ipAddress, ok := d.Get("ip_address").(string)
+	container, ok := d.Get("container").(string)
+	rawContainer := d.Get("rawcontainer").(bool)
 
 	if !ok {
 		diags = append(diags, diag.Diagnostic{
@@ -127,6 +136,14 @@ func dataSourceAddressesRead(ctx context.Context, d *schema.ResourceData, m inte
 
 	query := map[string]string{
 		"ipAddress": ipAddress,
+	}
+
+	if container != "" {
+		query["container"] = container
+
+		if rawContainer {
+			query["rawcontainer"] = strconv.FormatBool(rawContainer)
+		}
 	}
 
 	response, err := objMgr.GetAddress(query)

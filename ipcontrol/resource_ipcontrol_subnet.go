@@ -74,19 +74,17 @@ func resourceSubnet() *schema.Resource {
 			"block_status": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
+				Default:     "Deployed",
 				Description: "The current status of the block. Accepted values are: Deployed, FullyAssigned, Reserved, Aggregate",
 			},
 			"cloud_type": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
-				Description: "Specify the type of Cloud Provider. Currently one of: AWS, Azure, Cisco ACI, Cisco DNA Center, CloudBolt, OpenStack, ServiceNow, VMware.",
+				Description: "Specify the type of Cloud Provider. Currently one of: AWS, Azure, Cisco ACI, Cisco DNA Center, CloudBolt, OpenStack, ServiceNow, VMware, GCP.",
 			},
 			"cloud_object_id": {
 				Type:        schema.TypeString,
 				Optional:    true,
-				Computed:    true,
 				Description: "The ID of this object as it is known in the cloud environment.",
 			},
 		},
@@ -182,6 +180,7 @@ func getSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m inter
 }
 
 func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	d.Partial(true)
 	// Warning or errors can be collected in a slice type
 	var diags diag.Diagnostics
 	var err error
@@ -190,12 +189,47 @@ func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m in
 
 	name := d.Get("name").(string)
 	size := d.Get("size").(int)
-
+	dnsDomain := strings.TrimSpace(d.Get("dns_domain").(string))
+	status := strings.TrimSpace(d.Get("block_status").(string))
 	address := d.Get("address").(string)
 	cloudType := d.Get("cloud_type").(string)
 	cloudObjectId := d.Get("cloud_object_id").(string)
 
-	_, err = objMgr.UpdateSubnet(address, name, size, cloudType, cloudObjectId)
+	payload := en.IPCSubnetUpdate{
+		IPCSubnetPost: en.IPCSubnetPost{
+			Address:       address,
+			Name:          name,
+			Size:          size,
+			CloudType:     cloudType,
+			CloudObjectId: cloudObjectId,
+		},
+	}
+
+	if d.HasChange("block_status") {
+		oldValue, newValue := d.GetChange("block_status")
+		// if the block status is changed, we need to update the block status
+		payload.IPCSubnetPost.BlockStatus = newValue.(string)
+		// status is payload to get the current block
+		payload.Status = oldValue.(string)
+	} else {
+		payload.IPCSubnetPost.BlockStatus = status
+		payload.Status = status
+	}
+
+	// skip subnet if block status is Reserved or Aggregate
+	// currently subnet have only dnsDomain
+	if payload.IPCSubnetPost.BlockStatus != "Reserved" && payload.IPCSubnetPost.BlockStatus != "Aggregate" {
+
+		payload.Subnet = &en.Subnet{
+			DNSDomain: []string{},
+		}
+
+		if dnsDomain != "" {
+			payload.Subnet.DNSDomain = append(payload.Subnet.DNSDomain, dnsDomain)
+		}
+	}
+
+	err = objMgr.UpdateSubnet(&payload)
 
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -206,8 +240,10 @@ func updateSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m in
 		return diags
 	}
 
-	return getSubnetRecordContext(ctx, d, m)
-
+	d.Set("block_status", status)
+	diags = getSubnetRecordContext(ctx, d, m)
+	d.Partial(false)
+	return diags
 }
 
 func deleteSubnetRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

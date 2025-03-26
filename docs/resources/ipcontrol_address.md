@@ -18,7 +18,7 @@ The `ipcontrol_address` resource manages device configurations with comprehensiv
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `domain_name` | `string` | The domain name of the device. |
-| `device_type` | `string` | The type of the device. |
+| `device_type` | `string` | The type of the device. Default value is "Unspecified" |
 | `domain_type` | `string` | The type of the domain. |
 | `duid` | `string` | The DHCP unique identifier for IPv6. |
 | `options` | `list(string)` | Additional configuration options. |
@@ -43,7 +43,7 @@ Each interface in the `interfaces` list supports:
 | `address_type` | `list(string)` | Type of IP address (Required) |
 | `ip_address` | `list(string)` | IP addresses for the interface (Required) |
 | `container` | `list(string)` | Container information (Optional, Computed) |
-| `name` | `string` | Interface name (Optional, Computed) |
+| `name` | `string` | Interface name (Required) |
 | `id` | `integer` | Interface identifier (Computed) |
 
 ## Supported Address Type
@@ -54,11 +54,13 @@ Each interface in the `interfaces` list supports:
 - Manual DHCP
 - Reserved
 #### For IPv6
+- Static
 - Dynamic NA DHCPv6
 - Automatic NA DHCPv6
 - Manual NA DHCPv6
 - Dynamic TA DHCPv6
 - Automatic TA DHCPv6
+- Reserved
 
 > Note: Note that if Dynamic, Automaticor Manual DHCP is specified, there must be a DHCP server defined in the subnet policies for this IP Address
 

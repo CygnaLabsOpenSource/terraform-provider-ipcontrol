@@ -43,8 +43,7 @@ func resourceAddressPool() *schema.Resource {
 			},
 			"type": {
 				Type:        schema.TypeString,
-				Optional:    true,
-				Computed:    true,
+				Required:    true,
 				Description: "The type of address pool.",
 			},
 			"prefix_length": {

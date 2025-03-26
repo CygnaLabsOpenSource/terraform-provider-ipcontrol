@@ -64,6 +64,7 @@ func resourceAddress() *schema.Resource {
 				Type:        schema.TypeString,
 				Optional:    true,
 				Description: "The type of the device.",
+				Default:     "Unspecified",
 			},
 			"domain_type": {
 				Type:        schema.TypeString,
@@ -105,8 +106,7 @@ func resourceAddress() *schema.Resource {
 						},
 						"name": {
 							Type:        schema.TypeString,
-							Optional:    true,
-							Computed:    true,
+							Required:    true,
 							Description: "The name of this interface.",
 						},
 						"id": {
@@ -350,6 +350,7 @@ func getAddressRecordContext(ctx context.Context, d *schema.ResourceData, m inte
 }
 
 func updateAddressRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
+	d.Partial(true)
 	var diags diag.Diagnostics
 	connector := m.(*cc.Connector)
 	objMgr := cc.NewObjectManager(connector)
@@ -468,8 +469,10 @@ func updateAddressRecordContext(ctx context.Context, d *schema.ResourceData, m i
 	// setIPCAddressResource(d, *resp)
 
 	// return diags
-	return getAddressRecordContext(ctx, d, m)
+	diags = getAddressRecordContext(ctx, d, m)
 
+	d.Partial(false)
+	return diags
 }
 
 func deleteAddressRecordContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {

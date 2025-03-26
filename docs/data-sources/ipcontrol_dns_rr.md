@@ -29,7 +29,7 @@ The `ipcontrol_dns_rr` data source retrieves information about a DNS resource re
 | `resource_record_class` | `string` | The Class of the resource record. Defaults to “IN”. |
 | `ttl` | `string` | Time to live. |
 | `comment` | `string` | Comment text associated with the resource record. |
-| `device_rec_flag` | `string` | When set to true, this indicates that the resource record is bound to a device. When set to false, this indicates that the resource record is associated with the domain only, and not a specific device. |
+| `device_rec_flag` | `string` | When true, this indicates that the resource record is bound to a device. When false, this indicates that the resource record is associated with the domain only, and not a specific device. |
 
 
 
