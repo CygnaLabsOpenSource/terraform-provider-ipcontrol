@@ -61,6 +61,7 @@ func Provider() *schema.Provider {
 			"ipcontrol_address":      resourceAddress(),
 			"ipcontrol_dns_rr":       resourceDnsRR(),
 			"ipcontrol_address_pool": resourceAddressPool(),
+			"ipcontrol_domain":       resourceDomain(),
 		},
 		DataSourcesMap: map[string]*schema.Resource{
 			"ipcontrol_subnet":       dataSourceSubnets(),
