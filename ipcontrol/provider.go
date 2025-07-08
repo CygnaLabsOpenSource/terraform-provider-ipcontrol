@@ -68,6 +68,7 @@ func Provider() *schema.Provider {
 			"ipcontrol_address":      dataSourceAddresses(),
 			"ipcontrol_address_pool": dataSourceAddressPool(),
 			"ipcontrol_dns_rr":       dataSourceDnsRRs(),
+			"ipcontrol_dns":          dataSourceDomain(),
 		},
 		ConfigureContextFunc: providerConfigure,
 	}

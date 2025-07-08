@@ -4,8 +4,10 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"strings"
 
 	en "terraform-provider-ipcontrol/ipcontrol/entities"
+	"terraform-provider-ipcontrol/ipcontrol/utils"
 	cc "terraform-provider-ipcontrol/ipcontrol/utils"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -105,9 +107,13 @@ func resourceDomain() *schema.Resource {
 				Description: "Name of template domain. Required, if Derivative is “ALIAS”.",
 			},
 			"user_defined_fields": {
-				Type:        schema.TypeString,
-				Optional:    true,
-				Description: "The user defined fields associated with this domain, as listed in the domain information template specified in parameter infoTemplate. Required, if for UDFs defined as required fields.",
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem: &schema.Schema{
+					Type: schema.TypeString,
+				},
+				Description: "List of user-defined fields in key=value format, e.g. DHCPServerip=192.0.1.1",
 			},
 			"local_rpz": {
 				Type:        schema.TypeBool,
@@ -129,32 +135,41 @@ func resourceDomain() *schema.Resource {
 	}
 }
 
-func setIPCDomain(d *schema.ResourceData, rr *en.IPCDomain) {
-	d.SetId(strconv.Itoa(rr.ID))
-	d.Set("serial_number", rr.SerialNumber)
-	d.Set("domain_type", rr.DomainType)
-	d.Set("description", rr.Description)
-	d.Set("refresh", rr.Refresh)
-	d.Set("derivative", rr.Derivative)
-	d.Set("serialformat", rr.SerialFormat)
-	d.Set("reverse", rr.Reverse)
-	d.Set("info_template", rr.InfoTemplate)
+func setIPCDomain(d *schema.ResourceData, domain *en.IPCDomain) {
+	d.SetId(strconv.Itoa(domain.ID))
+	d.Set("serial_number", domain.SerialNumber)
+	d.Set("domain_type", domain.DomainType)
+	d.Set("description", domain.Description)
+	d.Set("refresh", domain.Refresh)
+	d.Set("derivative", domain.Derivative)
+	d.Set("serialformat", domain.SerialFormat)
+	d.Set("reverse", domain.Reverse)
+	d.Set("info_template", domain.InfoTemplate)
 
 	// Convert []string to comma-separated string for Terraform schema.TypeString
-	// d.Set("user_defined_fields", strings.Join(rr.UserDefinedFields, ","))
+	udfs := []string{}
+	for _, udf := range domain.UserDefinedFields {
+		kv := strings.Split(udf, "=")
+		if len(kv) == 2 && kv[1] != "" {
+			// Format as key=value
+			// ignore if the udf does not contain value. eg 'gatewayip='
+			udfs = append(udfs, fmt.Sprintf("%s=%s", kv[0], kv[1]))
+		}
+	}
+	d.Set("user_defined_fields", udfs)
 
 	// no need to set domain_name here as it is already set in the resource
-	// d.Set("domain_name", rr.DomainName)
+	// d.Set("domain_name", domain.DomainName)
 
-	d.Set("managed", rr.Managed)
-	d.Set("negative_cache_ttl", rr.NegativeCacheTTL)
-	d.Set("contact", rr.Contact)
-	d.Set("expire", rr.Expire)
-	d.Set("default_ttl", rr.DefaultTTL)
-	d.Set("delegated", rr.Delegated)
-	d.Set("local_rpz", rr.LocalRpz)
-	d.Set("template_domain", rr.TemplateDomain)
-	d.Set("retry", rr.Retry)
+	d.Set("managed", domain.Managed)
+	d.Set("negative_cache_ttl", domain.NegativeCacheTTL)
+	d.Set("contact", domain.Contact)
+	d.Set("expire", domain.Expire)
+	d.Set("default_ttl", domain.DefaultTTL)
+	d.Set("delegated", domain.Delegated)
+	d.Set("local_rpz", domain.LocalRpz)
+	d.Set("template_domain", domain.TemplateDomain)
+	d.Set("retry", domain.Retry)
 }
 
 func createDomainContext(ctx context.Context, d *schema.ResourceData, m interface{}) diag.Diagnostics {
@@ -162,6 +177,8 @@ func createDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 
 	connector := m.(*cc.Connector)
 	objMgr := cc.NewObjectManager(connector)
+	set := d.Get("user_defined_fields").(*schema.Set)
+	udfs, err := utils.ToStringSlice(set.List())
 
 	payload := &en.IPCDomainPost{
 		SerialNumber:     d.Get("serial_number").(int),
@@ -183,6 +200,16 @@ func createDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 		TemplateDomain:   d.Get("template_domain").(string),
 		Retry:            d.Get("retry").(string),
 	}
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Error converting user_defined_fields",
+			Detail:   fmt.Sprintf("Failed to convert user_defined_fields to string slice: %v", err),
+		})
+		return diags
+	} else {
+		payload.UserDefinedFields = udfs
+	}
 
 	// Parse user_defined_fields (comma-separated string → []string)
 	// if udfStr, ok := d.GetOk("user_defined_fields"); ok && udfStr.(string) != "" {
@@ -190,7 +217,7 @@ func createDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 	// }
 
 	// Gửi request tạo domain
-	err := objMgr.CreateDomain(payload)
+	err = objMgr.CreateDomain(payload)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,
@@ -247,6 +274,8 @@ func updateDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 		})
 		return diags
 	}
+	set := d.Get("user_defined_fields").(*schema.Set)
+	udfs, err := utils.ToStringSlice(set.List())
 
 	payload := &en.IPCDomainPost{
 		ID:               id,
@@ -273,6 +302,16 @@ func updateDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 	// if udfStr, ok := d.GetOk("user_defined_fields"); ok && udfStr.(string) != "" {
 	// 	payload.UserDefinedFields = strings.Split(udfStr.(string), ",")
 	// }
+	if err != nil {
+		diags = append(diags, diag.Diagnostic{
+			Severity: diag.Error,
+			Summary:  "Error converting user_defined_fields",
+			Detail:   fmt.Sprintf("Failed to convert user_defined_fields to string slice: %v", err),
+		})
+		return diags
+	} else {
+		payload.UserDefinedFields = udfs
+	}
 
 	err = objMgr.UpdateDomain(payload)
 	if err != nil {
