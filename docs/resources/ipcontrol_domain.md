@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ipcontrol_domain` resource manages domains in IPControl.
+The `ipcontrol_dns` resource manages domains in IPControl.
 
 ## Parameters
 
@@ -42,7 +42,7 @@ The `ipcontrol_domain` resource manages domains in IPControl.
 #### Domain Resource Record IPv4
 
 ```hcl
-resource "ipcontrol_domain" "example" {
+resource "ipcontrol_dns" "example" {
   domain_name         = "example.com"
   domain_type         = "Default"
   contact             = "admin.example.com."
