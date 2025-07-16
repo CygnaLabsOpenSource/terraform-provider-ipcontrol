@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ipcontrol_dns` resource manages domains in IPControl.
+The `ipcontrol_dns_domain` resource manages domains in IPControl.
 
 ## Parameters
 
@@ -34,7 +34,7 @@ The `ipcontrol_dns` resource manages domains in IPControl.
 | `user_defined_fields` | `list`   | -           | User-defined fields associated with the domain as per `info_template`. Required if any UDF is marked required.|
 | `local_rpz`           | `bool`   | `false`     | If `true`, this domain will contain RPZ (Response Policy Zone) rules. |
 | `description`         | `string` | -           | Description of the domain. |
-| `serialformat`        | `string` | **Computed**| The format of the serial number, if overridden at the domain level. |
+| `serialformat`        | `string` | `Global`    | The format of the serial number, if overridden at the domain level. |
 
 
 ## Example Usage
@@ -42,7 +42,7 @@ The `ipcontrol_dns` resource manages domains in IPControl.
 #### Domain Resource Record IPv4
 
 ```hcl
-resource "ipcontrol_dns" "example" {
+resource "ipcontrol_dns_domain" "example" {
   domain_name         = "example.com"
   domain_type         = "Default"
   contact             = "admin.example.com."

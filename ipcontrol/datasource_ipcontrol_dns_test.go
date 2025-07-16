@@ -16,7 +16,7 @@ var (
 	negative_cache_ttl = "86499"
 )
 
-func TestAccDataSourceRR(t *testing.T) {
+func TestAccDataSourceDomain(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
@@ -25,7 +25,7 @@ func TestAccDataSourceRR(t *testing.T) {
 				Config: testAccConfigWithProviderIPC(
 					fmt.Sprintf(`
 					
-					resource "ipcontrol_dns" "my_domain" {
+					resource "ipcontrol_dns_domain" "my_domain" {
 						domain_name = "%s"
 						managed = true
 						delegated = true
@@ -36,18 +36,18 @@ func TestAccDataSourceRR(t *testing.T) {
  						negative_cache_ttl =  "%s"
 					}
 					
-					data "ipcontrol_dns" "my_dns" {
+					data "ipcontrol_dns_domain" "my_dns" {
 					  domain               = "%s"
 					}
 					`, dns, refresh, default_ttl, retry, expire, negative_cache_ttl, dns),
 				),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "domain_name", dns),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "refresh", refresh),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "default_ttl", default_ttl),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "retry", retry),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "expire", expire),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "negative_cache_ttl", negative_cache_ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "domain_name", dns),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "refresh", refresh),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "default_ttl", default_ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "retry", retry),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "expire", expire),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "negative_cache_ttl", negative_cache_ttl),
 				),
 			},
 		},

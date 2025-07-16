@@ -2,7 +2,7 @@
 
 ## Overview
 
-The `ipcontrol_dns` data source retrieves information about a DNS managed by IPControl.
+The `ipcontrol_dns_domain` data source retrieves information about a DNS managed by IPControl.
 
 ## Parameters
 
@@ -42,12 +42,12 @@ The `ipcontrol_dns` data source retrieves information about a DNS managed by IPC
 
 #### Domain Data Source
 ```hcl
-data "ipcontrol_dns" "my_dns" {
+data "ipcontrol_dns_domain" "my_dns" {
   domain_name = "com."
 }
 
 output "dns" {
-  value = data.ipcontrol_dns.my_dns
+  value = data.ipcontrol_dns_domain.my_dns
 }
 
 ```

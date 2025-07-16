@@ -26,9 +26,9 @@ type IPCDomain struct {
 }
 
 /*
- * Resource record object constructor
+ * Domain object constructor
  */
-func NewDomain(sb IPCDnsRR) *IPCDnsRR {
+func NewDomain(sb IPCDomain) *IPCDomain {
 	res := sb
 	res.objectType = "ipc_domain"
 	return &res

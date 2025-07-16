@@ -31,6 +31,7 @@ func resourceDomain() *schema.Resource {
 			"domain_name": {
 				Type:        schema.TypeString,
 				Required:    true,
+				ForceNew:    true,
 				Description: "The name of the domain.",
 			},
 			"contact": {
@@ -53,6 +54,7 @@ func resourceDomain() *schema.Resource {
 			"derivative": {
 				Type:        schema.TypeString,
 				Optional:    true,
+				ForceNew:    true,
 				Default:     "Standard",
 				Description: "Specify the role of this domain. This can be one of “STANDARD”, “TEMPLATE”, “CATALOG”, or “ALIAS”. If not specified, defaults to “STANDARD”.",
 			},
@@ -211,12 +213,6 @@ func createDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 		payload.UserDefinedFields = udfs
 	}
 
-	// Parse user_defined_fields (comma-separated string → []string)
-	// if udfStr, ok := d.GetOk("user_defined_fields"); ok && udfStr.(string) != "" {
-	// 	payload.UserDefinedFields = strings.Split(udfStr.(string), ",")
-	// }
-
-	// Gửi request tạo domain
 	err = objMgr.CreateDomain(payload)
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
@@ -299,9 +295,6 @@ func updateDomainContext(ctx context.Context, d *schema.ResourceData, m interfac
 		Retry:            d.Get("retry").(string),
 	}
 
-	// if udfStr, ok := d.GetOk("user_defined_fields"); ok && udfStr.(string) != "" {
-	// 	payload.UserDefinedFields = strings.Split(udfStr.(string), ",")
-	// }
 	if err != nil {
 		diags = append(diags, diag.Diagnostic{
 			Severity: diag.Error,

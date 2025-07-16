@@ -9,8 +9,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccDns(t *testing.T) {
-	resourceName := "ipcontrol_dns.my_dns"
+func TestAccDnsDomain(t *testing.T) {
+	resourceName := "ipcontrol_dns_domain.my_dns"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -21,7 +21,7 @@ func TestAccDns(t *testing.T) {
 
 				Config: testAccConfigWithProviderIPC(
 					fmt.Sprintf(`
-					resource "ipcontrol_dns" "my_dns" {
+					resource "ipcontrol_dns_domain" "my_dns" {
 						domain_name  = "%s"
 					}
 					`, dns),
@@ -38,7 +38,7 @@ func TestAccDns(t *testing.T) {
 
 				Config: testAccConfigWithProviderIPC(
 					fmt.Sprintf(`
-					resource "ipcontrol_dns" "my_dns" {
+					resource "ipcontrol_dns_domain" "my_dns" {
 					  	domain_name = "%s"
 						managed = true
 						delegated = true
@@ -52,12 +52,12 @@ func TestAccDns(t *testing.T) {
 				),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckDnsExists(resourceName),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "domain_name", dns),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "refresh", refresh),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "default_ttl", default_ttl),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "retry", retry),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "expire", expire),
-					resource.TestCheckResourceAttr("data.ipcontrol_dns.my_dns", "negative_cache_ttl", negative_cache_ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "domain_name", dns),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "refresh", refresh),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "default_ttl", default_ttl),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "retry", retry),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "expire", expire),
+					resource.TestCheckResourceAttr("data.ipcontrol_dns_domain.my_dns", "negative_cache_ttl", negative_cache_ttl),
 				),
 			},
 		},
@@ -99,7 +99,7 @@ func testAccCheckDnsDestroy(s *terraform.State) error {
 	objMgr := cc.NewObjectManager(connector)
 
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "ipcontrol_dns" {
+		if rs.Type != "ipcontrol_dns_domain" {
 			continue
 		}
 
