@@ -38,9 +38,9 @@ The `ipcontrol_dns_domain` resource manages domains in IPControl.
 
 
 ### ⚠️ Force Replacement Parameters
-The following fields after changes will require deleting and recreating the resource:
-* `domain_name` - Can't change after created in IPControl.
-* `derivative` - Can't change after created in IPControl.
+The following fields cannot be changed after creation. Changes will require deleting and recreating the resource:
+* `domain_name`
+* `derivative`
 
 
 ## Example Usage
