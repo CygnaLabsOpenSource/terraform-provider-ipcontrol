@@ -21,7 +21,7 @@ The `ipcontrol_dns_domain` resource manages domains in IPControl.
 | `contact`             | `string` | **Computed**| The contact email address in dotted format. If not specified, a default contact will be formed by prepending `dnsadmin` to the domain name, e.g., `dnsadmin.example.com.`|
 | `delegated`           | `bool`   | `true`      | Indicates this domain will be associated directly with a zone file. |
 | `default_ttl`         | `string` | `86400`     | Default time to live (TTL) for the zone. Ignored if `managed` is false.|
-| `derivative`          | `string` | `STANDARD`  | Specify the role of this domain. One of: `STANDARD`, `TEMPLATE`, `CATALOG`, or `ALIAS`. |
+| `derivative`          | `string` | `Standard`  | Specify the role of this domain. This can be one of `Standard`, `Template`, `Catalog`, or `Alias`. |
 | `expire`              | `string` | `604800`    | Zone expire time. Ignored if `managed` is false. |
 | `info_template`       | `string` | -           | The name of the information template associated with this domain. |
 | `managed`             | `bool`   | `true`      | Indicates that this domain is fully defined in IPControl. |
@@ -37,6 +37,12 @@ The `ipcontrol_dns_domain` resource manages domains in IPControl.
 | `serialformat`        | `string` | `Global`    | The format of the serial number, if overridden at the domain level. |
 
 
+### ⚠️ Force Replacement Parameters
+The following fields cannot be changed after creation. Changes will require deleting and recreating the resource:
+* `domain_name`
+* `derivative`
+
+
 ## Example Usage
 
 #### Domain Resource Record IPv4
@@ -48,7 +54,7 @@ resource "ipcontrol_dns_domain" "example" {
   contact             = "admin.example.com."
   delegated           = true
   default_ttl         = "86400"
-  derivative          = "STANDARD"
+  derivative          = "Standard"
   expire              = "604800"
   info_template       = "Cisco"
   user_defined_fields = [
