@@ -41,7 +41,7 @@ Each interface in the `interfaces` list supports:
 | Parameter | Type | Description |
 |-----------|------|-------------|
 | `address_type` | `list(string)` | Type of IP address (Required) |
-| `ip_address` | `list(string)` | IP addresses for the interface (Required) |
+| `ip_address` | `list(string)` | IP addresses for the interface. To indicate that IPControl should use the next available address in a block, specify the block address followed by "/from-start" or "/from-end". When adding the next available IP, the user must update the ip_address field in the Terraform (.tf) file after the IP is created (Required) |
 | `container` | `list(string)` | Container information (Optional, Computed) |
 | `name` | `string` | Interface name (Required) |
 | `id` | `integer` | Interface identifier (Computed) |

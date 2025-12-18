@@ -1,32 +1,46 @@
 package utils
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	en "terraform-provider-ipcontrol/ipcontrol/entities"
 )
 
 /* CreateSubnet */
-func (objMgr *ObjectManager) CreateAddress(addr *en.IPCAddressPost) error {
-	// var address []en.IPCAddress
+func (objMgr *ObjectManager) CreateAddress(addr *en.IPCAddressPost) (string, error) {
 
 	resp, err := objMgr.connector.CreateObject(addr, "ipcadddevice")
+	if err != nil {
+		return "", err
+	}
 	log.Println("[DEBUG] Address Resp: " + fmt.Sprintf("%v", resp))
 
+	raw, err := json.Marshal(resp)
 	if err != nil {
-		return err
+		log.Printf("[ERROR] marshal failed: %v", err)
+		return "", fmt.Errorf("cannot marshal response: %v", err)
 	}
-	return nil
 
-	// err = json.Unmarshal([]byte(resp), &address)
+	var ipAddress string
+	if err := json.Unmarshal(raw, &ipAddress); err == nil {
+		trimmed := strings.TrimSpace(ipAddress)
+		if strings.HasPrefix(trimmed, "[") {
+			var objs []struct {
+				IpAddress string `json:"ipAddress"`
+			}
+			if err := json.Unmarshal([]byte(trimmed), &objs); err == nil {
+				if len(objs) > 0 && objs[0].IpAddress != "" {
+					return objs[0].IpAddress, nil
+				}
+			}
+		}
+		return ipAddress, nil
+	}
 
-	// if err != nil {
-	// 	log.Printf("Create Device Address Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-	// 	return nil, err
-	// }
-
-	// return &address[0], err
+	return "", fmt.Errorf("cannot extract IP from response: %s", string(raw))
 }
 
 /* get address */

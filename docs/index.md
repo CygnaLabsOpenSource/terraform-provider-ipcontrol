@@ -24,9 +24,17 @@ Where the fields represent the following:
 Below are the available resources for the following objectTypes:
 
 -   IPC Subnet (ipcontrol_subnet)
+-   IPC Address (ipcontrol_address)
+-   IPC Address Pool (ipcontrol_address_pool)
+-   IPC DNS Domain (ipcontrol_dns_domain)
+-   IPC DNS Resource Record (ipcontrol_dns_rr)
 
 ## Data Sources
 
 Below are the available IPControl data sources:
 
 -   IPC Subnet (ipcontrol_subnet)
+-   IPC Address (ipcontrol_address)
+-   IPC Address Pool (ipcontrol_address_pool)
+-   IPC DNS Domain (ipcontrol_dns_domain)
+-   IPC DNS Resource Record (ipcontrol_dns_rr)
